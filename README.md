@@ -1,99 +1,503 @@
-# UEBA Platform
+# User and Entity Behaviour Analytics (UEBA) for Internal Threat Identification
 
-An authenticated, seven-page User and Entity Behaviour Analytics workspace. The React application uses the FastAPI API for all dataset, activity, profile, detection, alert, and evaluation data. PostgreSQL is the system of record.
+<p align="center">
+  <strong>An AI-Assisted Cybersecurity Platform for Behavioural Analysis and Threat Identification</strong>
+</p>
 
-## Run locally
+<p align="center">
+  <img src="https://img.shields.io/badge/Domain-Cybersecurity-blue" />
+  <img src="https://img.shields.io/badge/Focus-UEBA-red" />
+  <img src="https://img.shields.io/badge/AI-Machine%20Learning-purple" />
+  <img src="https://img.shields.io/badge/Project-Design%20Project%20I-green" />
+</p>
 
-### 1. Configure PostgreSQL and the API
+## 1. Project Overview
 
-Create a PostgreSQL database and user, then configure the backend:
+Organizations generate large volumes of digital activity data through employee logins, file access, email communication, web browsing, and removable storage devices. Analysing these activities manually is difficult, especially in environments with large numbers of users and interconnected resources.
+
+One of the major cybersecurity challenges is identifying potentially malicious activities performed through authorized access. Such activities may initially appear similar to normal user behaviour, making them difficult to identify using traditional security monitoring approaches.
+
+**User and Entity Behaviour Analytics (UEBA) for Internal Threat Identification** is a cybersecurity project that aims to analyse user and entity activities, establish behavioural profiles, identify unusual patterns, calculate risk scores, and generate prioritised security alerts.
+
+The project explores the integration of temporal analysis, graph-based relationship analysis, and statistical behavioural profiling to support more contextual and explainable threat identification.
+
+## 2. Project Objectives
+
+The main objectives are:
+
+- Collect and preprocess user activity records from security datasets.
+- Establish individual and role-based behavioural profiles.
+- Analyse temporal patterns and relationships between users and resources.
+- Identify unusual activities using behavioural anomaly detection.
+- Combine multiple anomaly indicators into an overall risk score.
+- Prioritise potential threats using role-aware thresholds.
+- Generate security alerts with supporting evidence and reason codes.
+- Evaluate detection performance using appropriate metrics.
+
+## 3. Key Features
+
+The UEBA platform is organised into seven primary modules.
+
+### 3.1 Dashboard
+
+Provides an overview of the platform, including:
+
+- Dataset statistics
+- Total activity records
+- User and entity information
+- Activity distribution
+- Risk distribution
+- Recent security events
+- Detection summaries
+
+### 3.2 Dataset Upload
+
+Provides functionality for importing and managing activity datasets.
+
+Features include:
+
+- CSV dataset upload
+- CERT-style activity dataset support
+- Custom CSV schema handling
+- Activity and role metadata processing
+- Column alias detection
+- Data validation and preprocessing
+- Dataset quality reporting
+- Reproducible synthetic demonstration datasets
+
+### 3.3 Activity Explorer
+
+Allows users to examine processed activity records.
+
+Features include:
+
+- Activity record exploration
+- User-based filtering
+- Event category filtering
+- Timestamp-based search
+- Event ID inspection
+- Activity details and historical records
+
+### 3.4 Behaviour Profiles
+
+Analyses individual and role-based behavioural patterns.
+
+Features include:
+
+- User activity summaries
+- Role-based behavioural context
+- Historical activity comparison
+- Behavioural deviation analysis
+- Identification of unusual activity patterns
+
+### 3.5 Anomaly Detection
+
+Provides behavioural analysis and anomaly identification.
+
+The research design explores three analytical branches:
+
+- Temporal sequence analysis
+- User-resource relationship analysis
+- Personal and peer behavioural analysis
+
+The resulting anomaly indicators are intended to support combined risk assessment.
+
+### 3.6 Alerts
+
+Displays prioritised security alerts based on available risk scores.
+
+Features include:
+
+- Ranked security alerts
+- Risk severity classification
+- Combined risk score
+- Individual anomaly scores
+- Detection reasons
+- Related event evidence
+- Alert investigation
+- Analyst review and status tracking
+
+### 3.7 Evaluation
+
+Provides an evaluation workspace for analysing available model results.
+
+Potential evaluation measures include:
+
+- Precision
+- Recall
+- F1-score
+- PR-AUC
+- ROC-AUC
+- False Positive Rate (FPR)
+- Top-K Precision
+- Detection Delay
+- Alert Volume
+- Processing Time
+
+Evaluation charts and metrics should be generated from actual completed experiments and test-set predictions.
+
+## 4. Proposed Research Architecture
+
+The proposed research architecture consists of multiple analytical and monitoring components.
+
+### 4.1 Temporal Branch – Causal Transformer
+
+The temporal branch analyses sequences of user activities and predicts the next likely event.
+
+It produces a sequence-surprise score based on differences between expected and observed activities.
+
+### 4.2 Relational Branch – Heterogeneous Graph Transformer (HGT)
+
+The relational branch models interactions between users, devices, resources, and other entities using a heterogeneous graph.
+
+The HGT and relation decoder are proposed to identify unusual relationships and generate interaction-surprise scores.
+
+### 4.3 Personal and Peer Context
+
+This component uses:
+
+- Rolling Median
+- Median Absolute Deviation (MAD)
+- Individual behavioural baselines
+- Role-based peer comparisons
+
+It identifies deviations between current activity and historical behavioural patterns.
+
+### 4.4 Score Fusion
+
+The anomaly scores from the three branches are intended to be calibrated using calibration-set percentiles and combined through a weighted mean.
+
+The resulting score represents the overall behavioural risk.
+
+### 4.5 ADWIN Drift Monitoring
+
+Adaptive Windowing (ADWIN) is proposed to monitor changes in anomaly-score distributions and identify potential behavioural drift.
+
+### 4.6 Role-Aware Thresholds
+
+Rolling empirical quantiles are used in the proposed design to establish role-aware alert thresholds, with a global fallback when sufficient role-specific information is unavailable.
+
+### 4.7 Controlled Update Gate
+
+The proposed update mechanism allows baseline or threshold updates only using activities reviewed and confirmed as benign by analysts.
+
+### 4.8 Ranked Alerts and Evidence
+
+The system is designed to produce prioritised alerts containing:
+
+- User or entity information
+- Related event IDs
+- Individual branch scores
+- Combined risk score
+- Detection reason codes
+- Supporting activity evidence
+- Analyst review information
+
+### Architecture Workflow
+
+```text
+             CERT ACTIVITY DATA
+       Logon | File | Email | Web | USB
+                    |
+                    v
+             DATA PREPROCESSING
+                    |
+          +---------+---------+
+          |         |         |
+          v         v         v
+       TEMPORAL  RELATIONAL  PERSONAL / PEER
+       BRANCH    BRANCH      CONTEXT
+          |         |         |
+       Causal      HGT      Rolling Median
+     Transformer            + MAD
+          |         |         |
+          +---------+---------+
+                    |
+                    v
+                SCORE FUSION
+          Calibration + Weighted Mean
+                    |
+                    v
+              DRIFT MONITORING
+                  ADWIN
+                    |
+                    v
+            ROLE-AWARE THRESHOLDS
+                    |
+                    v
+              CONTROLLED UPDATE
+                    |
+                    v
+             RANKED SECURITY ALERTS
+                    |
+                    v
+              EVIDENCE & REVIEW
+```
+
+**Implementation status:** The current prototype includes empirical temporal transition surprise, historical user-resource edge novelty, and user/role median-and-MAD contextual scoring. The Causal Transformer, HGT relation decoder, ADWIN drift detector, and controlled threshold-update mechanism are proposed research components and should be marked implemented only after development and testing.
+
+## 5. Dataset
+
+The project uses the **CERT Insider Threat Dataset** as its intended benchmark for behavioural analysis and threat identification.
+
+The dataset contains different categories of user activity:
+
+| Activity Category | Description |
+|---|---|
+| Logon / Logoff | User authentication and session activity |
+| File Activity | File access and modification |
+| Email Activity | User email communication |
+| Web Activity | Website access and browsing |
+| Removable Devices | USB and external storage activity |
+| Role Metadata | User roles and organisational information |
+
+The platform also supports synthetic demonstration datasets for exploring the workflow.
+
+Synthetic demonstrations are not genuine CERT records and must be identified separately from benchmark data.
+
+## 6. Technology Stack
+
+| Component | Technology |
+|---|---|
+| Frontend | React, TypeScript, Vite |
+| Backend | Python, FastAPI |
+| Database | PostgreSQL |
+| Data Processing | Pandas, NumPy |
+| Machine Learning | Scikit-learn |
+| Deep Learning | PyTorch |
+| Graph Learning | PyTorch Geometric |
+| Visualisation | Interactive charts and graph visualisations |
+| Dataset Format | CSV |
+| API Documentation | FastAPI Swagger UI |
+| Version Control | Git and GitHub |
+
+## 7. System Architecture
+
+The platform follows a frontend-backend architecture.
+
+**Frontend:** Provides the user interface for dataset management, activity exploration, behavioural analysis, alerts, and evaluation.
+
+**Backend:** Handles API requests, dataset processing, behavioural scoring, anomaly detection, and alert generation.
+
+**Database:** PostgreSQL stores application data, datasets, processed events, behavioural information, and other supported records.
+
+```text
+                  USER
+                   |
+                   v
+             REACT FRONTEND
+                   |
+                   v
+              FASTAPI BACKEND
+                   |
+         +---------+----------+
+         |         |          |
+         v         v          v
+      DATASET   BEHAVIOUR   DETECTION
+      PROCESS   ANALYSIS    ENGINE
+         |         |          |
+         +---------+----------+
+                   |
+                   v
+              POSTGRESQL
+                   |
+         +---------+----------+
+         |                    |
+         v                    v
+    RISK SCORING          EVALUATION
+         |
+         v
+    SECURITY ALERTS
+```
+
+## 8. Installation and Setup
+
+### Prerequisites
+
+Install the following before running the project:
+
+- Python 3.11 or later
+- Node.js and npm
+- PostgreSQL
+- Git
+- Visual Studio Code (recommended)
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/Rishikesh0024/Design-Project-UEBA.git
+cd Design-Project-UEBA
+```
+
+### Step 2: Backend Setup
+
+Navigate to the backend directory:
 
 ```bash
 cd backend
 ```
 
-Create `.env` from `.env.example` if needed (do not overwrite an existing local configuration). Set `DATABASE_URL` to the PostgreSQL connection string and replace `SECRET_KEY` with a strong random value. For example, generate a key with:
-
-```bash
-python -c "import secrets; print(secrets.token_urlsafe(48))"
-```
-
-Install dependencies, apply the schema migration, and start the API:
+Create a virtual environment:
 
 ```bash
 python -m venv .venv
+```
+
+Activate the environment.
+
+**macOS / Linux:**
+
+```bash
 source .venv/bin/activate
+```
+
+**Windows:**
+
+```bash
+.venv\Scripts\activate
+```
+
+Install the dependencies:
+
+```bash
 pip install -r requirements.txt
+```
+
+Configure the environment variables using the provided `.env.example`, if available. Set the PostgreSQL connection details and required application secrets.
+
+If the project uses Alembic migrations, apply them:
+
+```bash
 alembic upgrade head
+```
+
+Start the backend using the configured FastAPI application entry point. For example:
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-The API is available at `http://localhost:8000`; interactive API documentation is at `http://localhost:8000/docs`.
+Backend address:
 
-### 2. Start the frontend
+`http://localhost:8000`
 
-In another terminal:
+API documentation:
+
+`http://localhost:8000/docs`
+
+### Step 3: Frontend Setup
+
+Open another terminal and navigate to the frontend directory:
 
 ```bash
 cd frontend
+```
+
+Install dependencies:
+
+```bash
 npm install
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:5173`. Development mode enables the temporary login bypass from `frontend/.env.development`, so the dashboard opens without credentials. Pages continue to use the configured API for their data; if the API is unavailable or requires authentication, the workspace shows an API error or empty state. Set `VITE_API_URL` if the API is hosted somewhere other than `http://localhost:8000/api/v1`.
+Open the local application address displayed in the terminal, commonly:
 
-To restore the normal login flow locally, set `VITE_DEV_AUTH_BYPASS=false` in `frontend/.env.development` (or remove that setting), then restart Vite. Login and registration routes remain available at `/login` and `/register`. The Vite configuration rejects this bypass in production builds; do not enable it outside local development.
+`http://localhost:5173`
 
-## Application pages
+**Note:** The commands and application entry points above assume the corresponding directories, scripts, configuration files, and modules exist in the repository. Follow the actual project configuration if names differ.
 
-The primary navigation contains exactly seven pages:
+## 9. Evaluation Methodology
 
-1. Dashboard
-2. Dataset Upload
-3. Activity Explorer
-4. Behaviour Profiles
-5. Anomaly Detection
-6. Alerts
-7. Evaluation
+The project considers the following evaluation metrics:
 
-Settings and logout are in the profile menu. The pages share a selected dataset and authenticated API client. Dataset uploads, profiles, events, model runs, risk windows, alerts, and analyst reviews are persisted through the API.
+| Metric | Purpose |
+|---|---|
+| Precision | Measures the proportion of flagged activities that are actually suspicious |
+| Recall | Measures the proportion of suspicious activities detected |
+| F1-score | Balances precision and recall |
+| PR-AUC | Evaluates precision-recall performance |
+| ROC-AUC | Measures discrimination across classification thresholds |
+| False Positive Rate | Measures the proportion of normal activities incorrectly flagged |
+| Top-K Precision | Measures the quality of the highest-ranked alerts |
+| Detection Delay | Measures the time taken to identify suspicious activity |
+| Alert Volume | Measures the number of alerts generated |
+| Processing Time | Measures computational performance |
 
-The Alerts page starts with a date-filtered risk summary, then shows highest-risk alerts with search, status/severity filters, pagination, evidence, and analyst investigation history. Evaluation includes historical completed-run comparisons and an interactive graph of observed user/resource/device event relationships. The graph is not an HGT prediction; unimplemented models and unavailable metrics are identified as such.
+Experiments should use chronological data partitioning and prevent future-event leakage. Ground-truth labels must be excluded from the scoring process and used only for evaluation.
 
-### Dataset ingestion
+No experimental performance values are claimed in this documentation unless supported by completed experiments.
 
-Upload one or more CSV files for a selected CERT release. Logon, File, Email, HTTP/Web, Removable Device, and role metadata files are supported. Column aliases are normalized, original event identifiers are retained, and validation reports include schema, record counts, missing values, duplicates, and skipped rows.
+## 10. Research Novelty
 
-The Dataset Upload page also includes three reproducible **SYNTHETIC DEMO** datasets. They are generated locally with fixed seeds, explicitly labelled as synthetic rather than genuine CERT records, and loaded through the same CSV validation and preprocessing pipeline as uploaded data. Demo previews include schema, column types, sample records, user/role summaries, and activity counts. Loading a demo selects it as the active dataset; demo records can be reset or removed without deleting uploaded datasets. Demo labels identify only the generated scenario examples and are not claims about real-world malicious activity.
+The proposed research explores the following aspects:
 
-The demo APIs are `GET /api/datasets/demo` (catalog; `/catalog` is also available), `GET /api/datasets/demo/{demo_id}/preview`, and `POST /api/datasets/demo/{demo_id}/load`. Equivalent versioned routes remain available under `/api/v1/datasets/demo`. Demo imports are idempotent by seed/version. Run `alembic upgrade head` after updating the backend, then restart Uvicorn; an already-running older API process will continue returning 404 for routes that were added later. Development CORS permits localhost Vite ports; production still uses only the explicitly configured origins.
+1. **Multi-Approach Behaviour Analysis:** Combining temporal, relational, and statistical behavioural analysis.
+2. **Personalised Behaviour Monitoring:** Comparing individual behaviour with historical and role-based patterns.
+3. **Combined Anomaly Scoring:** Integrating multiple anomaly indicators into an overall risk score.
+4. **Role-Aware Threat Identification:** Considering differences in expected activities across organisational roles.
+5. **Evidence-Based Alerts:** Providing supporting events and reason codes for investigation.
+6. **Controlled Behavioural Adaptation:** Exploring drift monitoring and updates based on reviewed benign activities.
 
-### Detection and evaluation
+## 11. Future Enhancements
 
-The current backend calculates empirical next-event transition surprise, historical user-resource edge novelty, and user/role median-and-MAD context scores. Fusion weights and the training window are configurable. Role-aware empirical thresholds use a global fallback.
+- Implement and evaluate the Causal Transformer branch.
+- Develop HGT-based relational learning and relation prediction.
+- Integrate ADWIN-based drift monitoring.
+- Implement controlled behavioural baseline updates.
+- Improve alert explainability and evidence presentation.
+- Conduct comparative experiments using CERT benchmark datasets.
+- Evaluate scalability, computational efficiency, and alert workload.
+- Explore additional privacy-preserving behavioural analytics techniques.
 
-**Architecture limitation:** the Causal Transformer, HGT relation decoder, ADWIN drift detector, and controlled threshold-update gate from the proposed research design are not implemented. The UI identifies this limitation and does not present the empirical scorers as those models. Evaluation shows only completed runs with usable held-out labels; no placeholder or fabricated metrics are included. Additional completed configurations can be compared through experiment history.
+## 12. Team Members
 
-Metrics include precision, recall, F1, PR-AUC, ROC-AUC and ROC/precision-recall curve points when both held-out classes are present, false-positive rate, top-K precision, detection delay, alert volume, processing time, and peak process memory. CSV export downloads the selected experiment metrics; PDF export opens the browser print dialog.
+This project is developed by the following students of the B.Tech programme in Computer Science and Engineering (Cyber Security).
 
-## Verification
+| S. No. | Team Member | Registration Number |
+|---:|---|---|
+| 1 | **Poreddy Rishikesh Reddy** | 2411021060340 |
+| 2 | **Kanchi Srinadh** | 2411021060341 |
+| 3 | **Boddapati Venkata Lakshmi Narasimha** | 2411021060415 |
+| 4 | **Kommalapati Kalyan Ram** | 2411021060769 |
 
-Run the complete backend and pipeline test suite from the backend directory so
-the `app` package resolves to the FastAPI application:
+### Project Guide
 
-```bash
-cd backend
-python -m pytest tests ../tests -v
-```
+**Dr. Neeba E A**
 
-Run the frontend tests and production build:
+Alliance School of Advanced Computing  
+Alliance University, Bengaluru
 
-```bash
-cd frontend
-npm test
-npm run build
-```
+## 13. Academic Details
 
-## Legacy prototype
+| Detail | Information |
+|---|---|
+| Project Title | User and Entity Behaviour Analytics (UEBA) for Internal Threat Identification |
+| Project Type | Design Project – I |
+| Course Code | E1CSA313 |
+| Department | Computer Science and Engineering (Cyber Security) |
+| Institution | Alliance School of Advanced Computing |
+| University | Alliance University, Bengaluru |
+| Academic Year | 2026 |
 
-`app.py` and `ueba_app/` contain the earlier Streamlit prototype. It remains available for reference, but it uses in-process session state and is not the React application's data path.
+## 14. Repository
+
+**GitHub Repository:**  
+https://github.com/Rishikesh0024/Design-Project-UEBA
+
+## 15. Acknowledgement
+
+We express our sincere gratitude to our project guide, **Dr. Neeba E A**, for the guidance, encouragement, and valuable suggestions provided throughout the development of this project.
+
+We also thank the faculty members and the Department of Computer Science and Engineering (Cyber Security), Alliance School of Advanced Computing, Alliance University, Bengaluru, for their support and encouragement.
+
+---
+
+<p align="center">
+  <strong>UEBA for Internal Threat Identification</strong><br/>
+  <em>Behavioural Analytics • Machine Learning • Cybersecurity • Threat Identification</em>
+</p>
